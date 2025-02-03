@@ -24,6 +24,18 @@ jobs:
           }
         shell: pwsh
 
+      # Debug step to list the files in the directory to confirm we're targeting the right files
+      - name: List files in the repo
+        run: |
+          Get-ChildItem "${{ github.workspace }}" -Recurse
+        shell: pwsh
+
+      # Debug step to ensure we are targeting the correct .exe files
+      - name: List .exe files to be signed
+        run: |
+          Get-ChildItem "${{ github.workspace }}" -Filter "*.exe" -Recurse
+        shell: pwsh
+
       # Code Signing Step
       - name: Azure Trusted Signing
         uses: Azure/trusted-signing-action@v0.5.1
@@ -38,3 +50,9 @@ jobs:
           # Point to the root directory of the repo
           files-folder: "${{ github.workspace }}"
           files-folder-filter: "exe"
+
+      # Debug step to confirm signing happened
+      - name: Check if file is signed
+        run: |
+          signtool verify /pa "${{ github.workspace }}/ArchitectCopilot.exe"
+        shell: pwsh

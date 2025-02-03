@@ -48,6 +48,6 @@ jobs:
           certificate-profile-name: ${{ secrets.AZURE_CERT_PROFILE_NAME }}
           
           # Point to the root directory of the repo
-          files-folder: "${{ github.workspace }}"
-          files-folder-filter: "exe"
+          files-folder: ${{ github.workspace }}
+          files-folder-filter: exe
           trace: true

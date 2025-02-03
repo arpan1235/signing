@@ -1,17 +1,30 @@
-name: Code Signing Workflow  # <-- Name of the workflow
+name: Code Signing Workflow
 
 on: 
   push: 
-    branches: [ main ]  # <-- Runs when code is pushed to main branch
+    branches: [ main ]  # Trigger on push to main branch
 
 jobs:
   sign-exe:
-    runs-on: windows-latest  # <-- Must be Windows for EXE signing
+    runs-on: windows-latest  # Ensure it's a Windows runner for EXE signing
 
     steps:
+      # Checkout the repository to make sure we have access to the files
       - name: Checkout repository
-        uses: actions/checkout@v4  # <-- Required to access files
+        uses: actions/checkout@v4
 
+      # Debug step to confirm the file exists
+      - name: Check if .exe file exists
+        run: |
+          if (Test-Path "${{ github.workspace }}/ArchitectCopilot.exe") {
+            Write-Host "File exists!"
+          } else {
+            Write-Host "File does not exist!"
+            exit 1  # Fail the job if file doesn't exist
+          }
+        shell: pwsh
+
+      # Code Signing Step
       - name: Azure Trusted Signing
         uses: Azure/trusted-signing-action@v0.5.1
         with:
@@ -21,7 +34,7 @@ jobs:
           endpoint: ${{ secrets.AZURE_ENDPOINT }}
           trusted-signing-account-name: ${{ secrets.AZURE_CODE_SIGNING_NAME }}
           certificate-profile-name: ${{ secrets.AZURE_CERT_PROFILE_NAME }}
-
-          # Sign all .exe files inside the folder
+          
+          # Point to the root directory of the repo
           files-folder: "${{ github.workspace }}"
           files-folder-filter: "exe"

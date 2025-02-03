@@ -1,4 +1,4 @@
-            - name: Trusted Signing
+- name: Trusted Signing
   uses: Azure/trusted-signing-action@v0.5.1
   with:
         azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
